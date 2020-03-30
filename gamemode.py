@@ -111,3 +111,11 @@ class ManualTestGame(Game):
                     self.bees[0].moveUp()
                 elif event.key == pg.K_DOWN:
                     self.bees[0].moveDown()
+                elif event.key == pg.K_d:
+                    self.bees[1].moveRight()
+                elif event.key == pg.K_a:
+                    self.bees[1].moveLeft()
+                elif event.key == pg.K_w:
+                    self.bees[1].moveUp()
+                elif event.key == pg.K_s:
+                    self.bees[1].moveDown()
