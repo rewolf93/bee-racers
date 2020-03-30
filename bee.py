@@ -4,76 +4,6 @@ import pickle as pkl
 import numpy as np
 
 
-class Bee(Moveable):
-
-    def __init__(self, spritepath: str, assemblypath=None, binary=None):
-        if assemblypath is None and binary is None:
-            raise Exception("Must provide assemblypath or binary")
-
-        Moveable.__init__(self, spritepath)
-
-        if binary is None:
-            with open(assemblypath, 'r') as fle:
-                binary = Assembler(fle.read())
-        self._binary = binary
-        self.__vm = None
-
-        fle = open(spritepath, 'rb')
-        image = pg.image.load(fle.read()).convert_alpha()
-        fle.close()
-        self._image = pg.transform.scale(image, (50, 50))
-        self._originalimage = self._image
-        self.rect = self.image.get_rect()
-        self.old_rect = self.rect
-        self.pos = (0, 0)
-
-        self._max_acceleration = 120
-        self._velocity = np.array([0., 0])
-        self._location = np.array([0., 0])
-        self._theta = 0
-        self._phi = 0
-
-    def start(self, startpos: (int, int)):
-        start_x = float(startpos[0])
-        start_y = float(startpos[1])
-        self._location = np.array([start_x, start_y])
-        self.pos = (start_x, start_y)
-        self.__vm = VirtualMachine(self._binary)
-
-    def reset(self):
-        self._image = self._originalimage
-        self.rect = self.image.get_rect()
-        self.old_rect = self.rect
-
-        self.__vm = None
-        self._velocity = np.array([0., 0])
-        self._location = np.array([0., 0])
-        self.pos = (0, 0)
-
-    def tick(self):
-        self.__vm.tick()
-        if self.__vm.checkflag():
-            pass
-
-    def save(self, filepath: str):
-        temp = self.__vm
-        self.__vm = None
-        with open(filepath, 'wb') as fle:
-            pkl.dump(self, fle)
-        self.__vm = temp
-
-    def move(self, dt=0.05):
-        self._theta += self._phi
-        arry = np.array([self._acceleration, self._velocity])
-        timevector = np.array([float(dt**2), dt])
-        calc = arry*timevector
-        ds = np.sum(calc)
-        dv = self.acceleration * dt
-        self._velocity += dv
-        real_ds = Physical.rotateaxis(np.array([ds, 0]), self.theta)
-        self._location += real_ds
-        self.update()
-
 
 class ManualBee(Moveable):
 
@@ -110,7 +40,7 @@ class ManualBee(Moveable):
         self._location = np.array([self.pos[0], self.pos[1]+self.distance])
 
     def moveLeft(self):
-        self._location = np.array([self.pos[0], self.pos[1]-self.distance])
+        self._location = np.array([self.pos[0]-self.distance, self.pos[1]])
 
     def moveRight(self):
-        self._location = np.array([self.pos[0], self.pos[1]+self.distance])
+        self._location = np.array([self.pos[0]+self.distance, self.pos[1]])
