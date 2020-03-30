@@ -68,7 +68,7 @@ class Game:
 
         #Draws all sprites to the screen, offset by the camera location
         for sprite in self.all_sprites:
-            self.screen.blit(sprite.image, self.camera.apply(sprite))
+            self.screen.blit(sprite._image, self.camera.apply(sprite))
 
         #Draws the foreground to the screen, offset by the camera location
         self.screen.blit(self.garden_foreground, self.camera.apply_rect(self.garden_rect))
