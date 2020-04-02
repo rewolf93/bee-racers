@@ -1,0 +1,3 @@
+set SPEED 20
+set ANGLE 30
+not SPEED
