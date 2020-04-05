@@ -1,3 +1,8 @@
 set SPEED 20
 set ANGLE 30
-not SPEED
+lte SPEED 10 jmp oops
+end
+
+oops
+err Wowza
+end
