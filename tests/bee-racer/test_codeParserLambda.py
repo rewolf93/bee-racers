@@ -31,12 +31,12 @@ def test_set():
     parser.parse()
     assert parser.bee.check_ram(2) == 4
 
+    '''
     code = """set 4 a"""
     parser = cpl.CodeParser(code)
     parser.parse()
     assert parser.bee.check_ram(4) == 4
 
-    '''
     code = """SET 4 a"""
     parser = cpl.CodeParser(code)
     parser.parse()
