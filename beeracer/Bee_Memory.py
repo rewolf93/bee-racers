@@ -1,6 +1,7 @@
 class VM:
 
-    ram = [0] * 65536
+    def __init__(self):
+        self.ram = [0] * 65536
 
     #Function for writing our the contents of the bee ram object to the file
     def print_ram(self):
@@ -8,6 +9,9 @@ class VM:
         for x in self.ram:
             self.file.write("%s\n" % x)
         self.file.close()
+    
+    def check_ram(self, loc):
+        return self.ram[loc]
             
     #Functions for instructions
 

@@ -1,9 +1,38 @@
-from Bee_Memory import VM
+from beeracer.Bee_Memory import VM
 import pickle
-import MemoryMap
+from beeracer.MemoryMap import MemoryMap
 
 class CodeParser():
 
+    def __init__(self, code):
+        self.bee = VM()
+
+        #Set line number to zero and initialize stack
+        self.lineNum = 0
+        self.functionLine = []
+        
+        #Open bee code file
+        self.userCode = code.split("\n")
+
+        #Remove whitespace
+        line = 0
+        while line < len(self.userCode):
+            terms = self.userCode[line].split()
+            if len(terms) == 0:
+                self.userCode.pop(line)
+            else:
+                line += 1
+        
+        #Save bee code as binary
+        '''
+        binPath = path.replace(".txt", ".bin")
+        binFile = open(binPath, "wb")
+        pickle.dump(self.userCode, binFile)
+        binFile.close()'''
+
+        #Create bee VM
+        self.bee.print_ram()
+        
     def jmp(self, terms):
 
         for lineNum, line in enumerate(self.userCode):
@@ -110,38 +139,8 @@ class CodeParser():
             
         elif(len(self.functionLine) == 0):
             self.lineNum = len(self.userCode) + 1
-    
-    bee = VM()
                                       
-    def __init__(self, path):
 
-        #Set line number to zero and initialize stack
-        self.lineNum = 0
-        self.functionLine = []
-        
-        #Open bee code file
-        beeCode = open(path, "r")
-        self.userCode = beeCode.readlines()
-        beeCode.close()
-
-        #Remove whitespace
-        line = 0
-        while line < len(self.userCode):
-            terms = self.userCode[line].split()
-            if len(terms) == 0:
-                self.userCode.pop(line)
-            else:
-                line += 1
-        
-        #Save bee code as binary
-        binPath = path.replace(".txt", ".bin")
-        binFile = open(binPath, "wb")
-        pickle.dump(self.userCode, binFile)
-        binFile.close()
-
-        #Create bee VM
-        self.bee.print_ram()
-        
     def parse(self):
 
         #Function dictionary
@@ -194,16 +193,20 @@ class CodeParser():
                     self.memloc = MemoryMap.Speed
                 elif terms[1] == "ANGLE":
                     self.memloc = MemoryMap.Angle
+                else:
+                    self.memloc = int(terms[1])
                     
                 math[terms[0]](self.memloc, int(terms[2]))
 
             elif len(terms) == 5 or len(terms) == 2:
-                
+                self.memloc = int(terms[1])
                 #Set memory location to what variable needs to be changed
                 if terms[1] == "SPEED":
                     self.memloc = MemoryMap.Speed
                 elif terms[1] == "ANGLE":
                     self.memloc = MemoryMap.Angle
+                else:
+                    self.memloc = int(terms[1])
                     
                 if math.get(terms[0]):    
                     math[terms[0]](self.memloc)
