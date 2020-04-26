@@ -11,7 +11,7 @@ class CodeParser():
         #Set line number to zero and initialize stack
         self.lineNum = 0
         self.functionLine = []
-        
+
         #Open bee code file
         self.userCode = code.split("\n")
 
@@ -23,7 +23,7 @@ class CodeParser():
                 self.userCode.pop(line)
             else:
                 line += 1
-        
+
         #Save bee code as binary
         '''
         binPath = path.replace(".txt", ".bin")
@@ -33,7 +33,7 @@ class CodeParser():
 
         #Create bee VM
         self.bee.print_ram()
-        
+
     def jmp(self, terms):
 
         for lineNum, line in enumerate(self.userCode):
