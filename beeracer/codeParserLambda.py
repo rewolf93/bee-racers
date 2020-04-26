@@ -1,61 +1,77 @@
 from beeracer.Bee_Memory import VM
-import pickle
 from beeracer.MemoryMap import MemoryMap
+import pickle
+import sys
 
 class CodeParser():
 
-    def __init__(self, code):
+    #Initialization                             
+    def __init__(self, path):
         self.bee = VM()
-
+    
         #Set line number to zero and initialize stack
         self.lineNum = 0
         self.functionLine = []
-        
-        #Open bee code file
-        self.userCode = code.split("\n")
 
-        #Remove whitespace
+        #Check if path is a text file
+        if not ".txt" in path:
+            self.fileTypeError()
+            
+        #Open bee code file
+        beeCode = open(path, "r")
+        self.userCode = beeCode.readlines()
+        beeCode.close()
+
+        #Remove whitespace and comments and, set ports to memory locations 
         line = 0
         while line < len(self.userCode):
             terms = self.userCode[line].split()
-            if len(terms) == 0:
+            if len(terms) == 0 or "#" in terms[0]:
                 self.userCode.pop(line)
             else:
                 line += 1
-        
+      
         #Save bee code as binary
-        '''
         binPath = path.replace(".txt", ".bin")
         binFile = open(binPath, "wb")
         pickle.dump(self.userCode, binFile)
-        binFile.close()'''
+        binFile.close()
 
         #Create bee VM
         self.bee.print_ram()
-        
-    def jmp(self, terms):
 
+    #Jump to line
+    def jmp(self, terms):
         for lineNum, line in enumerate(self.userCode):
             line = self.userCode[lineNum].split()
             if line[0] == terms[1]:
                 self.pushFunction()
                 self.lineNum = lineNum
                 return
-            
+
+    #Bee flies    
     def fly(self):
         return
         #REMOVE COLLISION FROM BEE FOR SET TIME PERIOD
         #INCREASE SIZE OF BEE SPRITE AND DEPTH OF SHADOW THEN GO BACK TO NORMAL
 
+    #Change port to memory location
+    def portToLoc(self, terms):
+        for i in range(1, len(terms)):
+            if terms[i] in MemoryMap.ports:
+                terms[i] = MemoryMap.ports[terms[i]]
+                
+    #Change port to an int
     def portToNum(self, terms):
-        for i, _ in enumerate(terms):
-            if terms[i] == "SPEED":
-                terms[i] = self.bee.opo(MemoryMap.Speed)
-            if terms[i] == "ANGLE":
-                terms[i] = self.bee.opo(MemoryMap.Angle)
+        for i in range(1, len(terms)):
+            if terms[i] in MemoryMap.ports:
+                terms[i] = self.bee.opo(MemoryMap.ports[terms[i]])
 
+    #Less than
     def lst(self, terms):
-        self.portToNum(terms)
+        if not terms[3] == "jmp":
+            self.invalidSyntaxError(self.userCode[self.lineNum], terms)
+
         if int(terms[1]) < int(terms[2]):
             for lineNum, line in enumerate(self.userCode):
                 line in self.userCode[lineNum].split()
@@ -65,8 +81,12 @@ class CodeParser():
                     self.lineNum = lineNum
                     return
 
+                
+    #Less than or equal to
     def lte(self, terms):
-        self.portToNum(terms)
+        if not terms[3] == "jmp":
+            self.invalidSyntaxError(self.userCode[self.lineNum], terms)
+            
         if int(terms[1]) <= int(terms[2]):
             for lineNum, line in enumerate(self.userCode):
                 line in self.userCode[lineNum].split()
@@ -75,9 +95,12 @@ class CodeParser():
                     self.pushFunction()
                     self.lineNum = lineNum
                     return
-                
+
+    #Greater than
     def grt(self, terms):
-        self.portToNum(terms)
+        if not terms[3] == "jmp":
+            self.invalidSyntaxError(self.userCode[self.lineNum], terms)
+
         if int(terms[1]) > int(terms[2]):
             for lineNum, line in enumerate(self.userCode):
                 line in self.userCode[lineNum].split()
@@ -86,9 +109,12 @@ class CodeParser():
                     self.pushFunction()
                     self.lineNum = lineNum
                     return
-                
+
+    #Greater than or equal to         
     def gte(self, terms):
-        self.portToNum(terms)
+        if not terms[3] == "jmp":
+            self.invalidSyntaxError(self.userCode[self.lineNum], terms)
+
         if int(terms[1]) >= int(terms[2]):
             for lineNum, line in enumerate(self.userCode):
                 line in self.userCode[lineNum].split()
@@ -97,9 +123,12 @@ class CodeParser():
                     self.pushFunction()
                     self.lineNum = lineNum
                     return
-                
+                  
+    #Equal to        
     def eqt(self, terms):
-        self.portToNum(terms)
+        if not terms[3] == "jmp":
+            self.invalidSyntaxError(self.userCode[self.lineNum], terms)
+            
         if int(terms[1]) == int(terms[2]):
             for lineNum, line in enumerate(self.userCode):
                 line in self.userCode[lineNum].split()
@@ -107,9 +136,12 @@ class CodeParser():
                 if line == terms[4]:
                     self.lineNum = lineNum
                     return
-                
+
+    #Not equal to        
     def nte(self, terms):
-        self.portToNum(terms)
+        if not terms[3] == "jmp":
+            self.invalidSyntaxError(self.userCode[self.lineNum], terms)
+
         if int(terms[1]) != int(terms[2]):
             for lineNum, line in enumerate(self.userCode):
                 line in self.userCode[lineNum].split()
@@ -119,6 +151,7 @@ class CodeParser():
                     self.lineNum = lineNum
                     return
 
+    #Error
     def err(self, terms):
         temp = ""
         for i in range(1, int(len(terms))): 
@@ -126,21 +159,27 @@ class CodeParser():
             temp += " "
         print("ERROR: " + temp)
 
+    #Wait cycles
     def wait(self, cycles):
+        if not isinstance(cycles, int):
+            self.invalidInputError(self.userCode[self.lineNum])
+            
         self.bee.nop(int(cycles))
 
+    #Push function to stack for return
     def pushFunction(self):
         self.functionLine.append(self.lineNum)
 
+    #Return to function or end code
     def popFunction(self):
-        if(len(self.functionLine) > 0):
+        if len(self.functionLine) > 0:
             self.lineNum = self.functionLine[(len(self.functionLine)) - 1]
             self.functionLine.pop()
             
-        elif(len(self.functionLine) == 0):
+        elif len(self.functionLine) == 0:
             self.lineNum = len(self.userCode) + 1
-                                      
 
+    #Parser  
     def parse(self):
 
         #Function dictionary
@@ -148,15 +187,27 @@ class CodeParser():
                 "sub" : self.bee.sub,  #Working
                 "mpy" : self.bee.mpy,  #Working
                 "div" : self.bee.div,  #Working
-                "set" : self.bee.mov,  #Working
+                "mov" : self.bee.mov,  #Working
                 "mod" : self.bee.mod,  #Working
                 "inc" : self.bee.inc,  #Working
                 "dec" : self.bee.dec,  #Working
                 "neg" : self.bee.neg,  #Working
-                "or" : self.bee.orr,   #Working
+                "or"  : self.bee.orr,  #Working
                 "and" : self.bee.andd, #Working
                 "xor" : self.bee.xorr, #Working
                 "not" : self.bee.nott  #Working
+        }
+
+        inputFunc = {"p_zoom"   : self.bee.p_zoom,
+                     "p_steer"  : self.bee.p_steer,
+                     "p_scanarc": self.bee.p_scanarc
+        }
+
+        outputFunc = {"p_compass"   : self.bee.p_compass,
+                      "p_tesla"     : self.bee.p_tesla,
+                      "p_walldist"  : self.bee.p_walldist,
+                      "p_homedist"  : self.bee.p_homedist,
+                      "p_pollendist": self.bee.p_pollendist
         }
 
         comparisons = { "jmp" : self.jmp, #Working
@@ -167,15 +218,13 @@ class CodeParser():
                         "gte" : self.gte, #Working
                         "eqt" : self.eqt, #Working
                         "nte" : self.nte, #Working
-                        "nop" : self.wait #Working
         }
         
         while self.lineNum < len(self.userCode):
 
-            #Split line up into parts
-            terms = self.userCode[self.lineNum].split()
-            ##print(self.lineNum, terms)           
-                
+            #Split line up into parts and change register name to register location
+            terms = self.userCode[self.lineNum].split()       
+    
             #Find function
             if terms[0] == "end":
                 self.popFunction()
@@ -187,33 +236,38 @@ class CodeParser():
                 self.wait(terms[1])
                 
             elif len(terms) == 3:
-                
-                #Set memory location to what variable needs to be changed
-                if terms[1] == "SPEED":
-                    self.memloc = MemoryMap.Speed
-                elif terms[1] == "ANGLE":
-                    self.memloc = MemoryMap.Angle
-                else:
-                    self.memloc = int(terms[1])
-                    
-                math[terms[0]](self.memloc, int(terms[2]))
+                self.portToLoc(terms)
+                math[terms[0]](int(terms[1]), int(terms[2]))
 
             elif len(terms) == 5 or len(terms) == 2:
-                self.memloc = int(terms[1])
+                
                 #Set memory location to what variable needs to be changed
-                if terms[1] == "SPEED":
-                    self.memloc = MemoryMap.Speed
-                elif terms[1] == "ANGLE":
-                    self.memloc = MemoryMap.Angle
-                else:
-                    self.memloc = int(terms[1])
-                    
+                self.portToNum(terms)
                 if math.get(terms[0]):    
-                    math[terms[0]](self.memloc)
+                    math[terms[0]](terms[1], terms[2])
+
                 else:
                     comparisons[terms[0]](terms)
 
             #Increment line number
             self.lineNum += 1
 
-        
+    #Wrong filetype when loading bee
+    def fileTypeError(self):
+        print("ERROR: Invalid filetype for bee. Please use a .txt file")
+        sys.exit()
+
+    #Wrong input type with function
+    def invalidInputError(self, line):
+        print("ERROR: Invalid input type on line", self.lineNum, ":", line)
+        sys.exit()
+
+    #Wrong syntax with function
+    def invalidSyntaxError(self, line, terms):
+        print("ERROR: Invalid syntax on line", self.lineNum, ":", line, "...'", terms[3], "' should be ' jmp '")
+        sys.exit()
+
+    #Wrong memory location accessed
+    def invalidMemLocAccess(self, line):
+        print("ERROR: Unauthorized access to memory location, consult memory map.", self.lineNum, ":", line)
+        sys.exit()
