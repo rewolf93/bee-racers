@@ -1,6 +1,7 @@
-from beeracer.Bee_Memory import VM
+from Bee_Memory import VM
 import pickle
-from beeracer.MemoryMap import MemoryMap
+from MemoryMap import MemoryMap
+
 
 class CodeParser():
 
