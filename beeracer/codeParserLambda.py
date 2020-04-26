@@ -187,7 +187,7 @@ class CodeParser():
                 "sub" : self.bee.sub,  #Working
                 "mpy" : self.bee.mpy,  #Working
                 "div" : self.bee.div,  #Working
-                "set" : self.bee.mov,  #Working
+                "mov" : self.bee.mov,  #Working
                 "mod" : self.bee.mod,  #Working
                 "inc" : self.bee.inc,  #Working
                 "dec" : self.bee.dec,  #Working
@@ -196,6 +196,18 @@ class CodeParser():
                 "and" : self.bee.andd, #Working
                 "xor" : self.bee.xorr, #Working
                 "not" : self.bee.nott  #Working
+        }
+
+        inputFunc = {"p_zoom"   : self.bee.p_zoom,
+                     "p_steer"  : self.bee.p_steer,
+                     "p_scanarc": self.bee.p_scanarc
+        }
+
+        outputFunc = {"p_compass"   : self.bee.p_compass,
+                      "p_tesla"     : self.bee.p_tesla,
+                      "p_walldist"  : self.bee.p_walldist,
+                      "p_homedist"  : self.bee.p_homedist,
+                      "p_pollendist": self.bee.p_pollendist
         }
 
         comparisons = { "jmp" : self.jmp, #Working
@@ -253,4 +265,9 @@ class CodeParser():
     #Wrong syntax with function
     def invalidSyntaxError(self, line, terms):
         print("ERROR: Invalid syntax on line", self.lineNum, ":", line, "...'", terms[3], "' should be ' jmp '")
+        sys.exit()
+
+    #Wrong memory location accessed
+    def invalidMemLocAccess(self, line):
+        print("ERROR: Unauthorized access to memory location, consult memory map.", self.lineNum, ":", line)
         sys.exit()
