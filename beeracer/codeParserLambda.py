@@ -1,9 +1,44 @@
-import Bee_Memory
+from beeracer.Bee_Memory import VM
+from beeracer.MemoryMap import MemoryMap
 import pickle
 import sys
-import MemoryMap
 
 class CodeParser():
+
+    #Initialization                             
+    def __init__(self, path):
+        self.bee = VM()
+    
+        #Set line number to zero and initialize stack
+        self.lineNum = 0
+        self.functionLine = []
+
+        #Check if path is a text file
+        if not ".txt" in path:
+            self.fileTypeError()
+            
+        #Open bee code file
+        beeCode = open(path, "r")
+        self.userCode = beeCode.readlines()
+        beeCode.close()
+
+        #Remove whitespace and comments and, set ports to memory locations 
+        line = 0
+        while line < len(self.userCode):
+            terms = self.userCode[line].split()
+            if len(terms) == 0 or "#" in terms[0]:
+                self.userCode.pop(line)
+            else:
+                line += 1
+      
+        #Save bee code as binary
+        binPath = path.replace(".txt", ".bin")
+        binFile = open(binPath, "wb")
+        pickle.dump(self.userCode, binFile)
+        binFile.close()
+
+        #Create bee VM
+        self.bee.print_ram()
 
     #Jump to line
     def jmp(self, terms):
@@ -143,42 +178,6 @@ class CodeParser():
             
         elif len(self.functionLine) == 0:
             self.lineNum = len(self.userCode) + 1
-    
-    bee = Bee_Memory.VM()
-
-    #Initialization                             
-    def __init__(self, path):
-
-        #Set line number to zero and initialize stack
-        self.lineNum = 0
-        self.functionLine = []
-
-        #Check if path is a text file
-        if not ".txt" in path:
-            self.fileTypeError()
-            
-        #Open bee code file
-        beeCode = open(path, "r")
-        self.userCode = beeCode.readlines()
-        beeCode.close()
-
-        #Remove whitespace and comments and, set ports to memory locations 
-        line = 0
-        while line < len(self.userCode):
-            terms = self.userCode[line].split()
-            if len(terms) == 0 or "#" in terms[0]:
-                self.userCode.pop(line)
-            else:
-                line += 1
-      
-        #Save bee code as binary
-        binPath = path.replace(".txt", ".bin")
-        binFile = open(binPath, "wb")
-        pickle.dump(self.userCode, binFile)
-        binFile.close()
-
-        #Create bee VM
-        self.bee.print_ram()
 
     #Parser  
     def parse(self):
