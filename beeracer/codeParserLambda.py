@@ -48,12 +48,12 @@ class CodeParser():
                 self.pushFunction()
                 self.lineNum = lineNum
                 return
+
     #Bee flies    
     def fly(self):
         return
         #REMOVE COLLISION FROM BEE FOR SET TIME PERIOD
         #INCREASE SIZE OF BEE SPRITE AND DEPTH OF SHADOW THEN GO BACK TO NORMAL
-
 
     #Change port to memory location
     def portToLoc(self, terms):
@@ -66,13 +66,12 @@ class CodeParser():
         for i in range(1, len(terms)):
             if terms[i] in MemoryMap.ports:
                 terms[i] = self.bee.opo(MemoryMap.ports[terms[i]])
-            
 
     #Less than
     def lst(self, terms):
         if not terms[3] == "jmp":
             self.invalidSyntaxError(self.userCode[self.lineNum], terms)
-            
+
         if int(terms[1]) < int(terms[2]):
             for lineNum, line in enumerate(self.userCode):
                 line in self.userCode[lineNum].split()
@@ -81,6 +80,7 @@ class CodeParser():
                     self.pushFunction()
                     self.lineNum = lineNum
                     return
+
                 
     #Less than or equal to
     def lte(self, terms):
@@ -100,7 +100,7 @@ class CodeParser():
     def grt(self, terms):
         if not terms[3] == "jmp":
             self.invalidSyntaxError(self.userCode[self.lineNum], terms)
-            
+
         if int(terms[1]) > int(terms[2]):
             for lineNum, line in enumerate(self.userCode):
                 line in self.userCode[lineNum].split()
@@ -114,7 +114,7 @@ class CodeParser():
     def gte(self, terms):
         if not terms[3] == "jmp":
             self.invalidSyntaxError(self.userCode[self.lineNum], terms)
-            
+
         if int(terms[1]) >= int(terms[2]):
             for lineNum, line in enumerate(self.userCode):
                 line in self.userCode[lineNum].split()
@@ -123,7 +123,7 @@ class CodeParser():
                     self.pushFunction()
                     self.lineNum = lineNum
                     return
-
+                  
     #Equal to        
     def eqt(self, terms):
         if not terms[3] == "jmp":
@@ -141,7 +141,7 @@ class CodeParser():
     def nte(self, terms):
         if not terms[3] == "jmp":
             self.invalidSyntaxError(self.userCode[self.lineNum], terms)
-            
+
         if int(terms[1]) != int(terms[2]):
             for lineNum, line in enumerate(self.userCode):
                 line in self.userCode[lineNum].split()
@@ -212,7 +212,7 @@ class CodeParser():
 
             #Split line up into parts and change register name to register location
             terms = self.userCode[self.lineNum].split()       
-            
+    
             #Find function
             if terms[0] == "end":
                 self.popFunction()
@@ -233,6 +233,7 @@ class CodeParser():
                 self.portToNum(terms)
                 if math.get(terms[0]):    
                     math[terms[0]](terms[1], terms[2])
+
                 else:
                     comparisons[terms[0]](terms)
 
