@@ -1,7 +1,9 @@
-from beeracer.Bee_Memory import VM
-from beeracer.MemoryMap import MemoryMap
+
+from Bee_Memory import VM
 import pickle
+from MemoryMap import MemoryMap
 import sys
+
 
 class CodeParser():
 
@@ -12,6 +14,7 @@ class CodeParser():
         #Set line number to zero and initialize stack
         self.lineNum = 0
         self.functionLine = []
+
 
         #Check if path is a text file
         if not ".txt" in path:
@@ -30,7 +33,7 @@ class CodeParser():
                 self.userCode.pop(line)
             else:
                 line += 1
-      
+
         #Save bee code as binary
         binPath = path.replace(".txt", ".bin")
         binFile = open(binPath, "wb")
@@ -39,6 +42,7 @@ class CodeParser():
 
         #Create bee VM
         self.bee.print_ram()
+
 
     #Jump to line
     def jmp(self, terms):
