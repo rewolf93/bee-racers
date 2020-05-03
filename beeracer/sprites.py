@@ -1,6 +1,6 @@
 import pygame as pg
-from settings import *
-from tilemap import collide_hit_rect
+from beeracer.settings import *
+from beeracer.tilemap import collide_hit_rect
 vec = pg.math.Vector2
 
 class Player(pg.sprite.Sprite):
