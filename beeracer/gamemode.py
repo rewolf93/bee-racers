@@ -1,6 +1,6 @@
 import pygame as pg
-import config
-from gamewindow import Camera
+import beeracer.config as config
+from beeracer.gamewindow import Camera
 
 #Will be called from the main menu
 def play_game(screen, clock, mode, garden, bees):

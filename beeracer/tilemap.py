@@ -1,7 +1,7 @@
 import pygame as pg
 import pytmx
 from pytmx.util_pygame import load_pygame
-from settings import *
+from beeracer.settings import *
 
 def collide_hit_rect(one, two):
 	return one.hit_rect.colliderect(two.rect)

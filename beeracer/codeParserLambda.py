@@ -1,7 +1,7 @@
 
-from Bee_Memory import VM
+from beeracer.Bee_Memory import VM
 import pickle
-from MemoryMap import MemoryMap
+from beeracer.MemoryMap import MemoryMap
 import sys
 
 
