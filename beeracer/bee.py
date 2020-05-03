@@ -1,8 +1,8 @@
 import pygame as pg
 import pickle as pkl
 import numpy as np
-from codeParserLambda import *
-from physics import Moveable, Physical
+from beeracer.codeParserLambda import *
+from beeracer.physics import Moveable, Physical
 
 
 class Bee(Moveable):
@@ -14,8 +14,7 @@ class Bee(Moveable):
         Moveable.__init__(self, spritepath)
 
         if binary is None:
-            with open(assemblypath, 'r') as fle:
-                binary = CodeParser(fle.read())
+            binary = CodeParser(assemblypath)
         self._binary = binary
         self.__vm = None
 

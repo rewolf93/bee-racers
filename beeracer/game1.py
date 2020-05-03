@@ -5,9 +5,9 @@
 import pygame as pg
 import sys
 from os import path
-from settings import *
-from sprites import *
-from tilemap import *
+from beeracer.settings import *
+from beeracer.sprites import *
+from beeracer.tilemap import *
 
 #def draw_player_pollen(surf, x, y, pct):
 #	if pct < 0:
