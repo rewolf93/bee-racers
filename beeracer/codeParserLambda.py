@@ -275,3 +275,9 @@ class CodeParser():
     def invalidMemLocAccess(self, line):
         print("ERROR: Unauthorized access to memory location, consult memory map.", self.lineNum, ":", line)
         sys.exit()
+
+    def checkMemory(self, loc):
+        return self.bee.check_ram(loc)
+
+    def setMemory(self, loc=0, value=0):
+        self.bee.set_ram(loc, value)
