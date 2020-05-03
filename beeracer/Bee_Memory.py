@@ -118,3 +118,71 @@ class VM:
     #OPO - Output number from memory loc into port
     def opo(bee, mem_loc):
         return bee.ram[mem_loc]
+
+#Input Functions
+
+    #P_ZOOM Set Speed of Bee
+    def p_zoom(bee, y):
+        bee.ram[512] = y
+    #P_Steer Set angle to turn
+    def p_steer(bee, y):
+        bee.ram[513] = y
+    #P_SCANARC Set arc width to scan
+    def p_scanarc(bee, y):
+        bee.ram[514] = y
+
+    #Output Functions
+
+    #P_COMPASS Current Heading of Bee
+    def p_compass(bee, value):
+        bee.ram[514] = value
+    #P_TESLA Current Distance to closest Bee
+    def p_tesla(bee, value):
+        bee.ram[516] = value
+    #P_WALLDIST Current Distance to closest wall
+    def p_walldist(bee, value):
+        bee.ram[517] = value
+    #P_HOMEDIST Current distance to home
+    def p_homedist(bee, value):
+        bee.ram[518] = value
+    #P_POLLENDIST Current distance to pollen
+    def p_pollendist(bee, value):
+        bee.ram[519] = value
+
+
+
+
+    #PORTS
+
+    #Get current speed from Game
+    def setCurSpeed(bee, value):
+        bee.ram[2] = value
+
+    #Get current X axis of bee homefrom Game
+    def setXAxisBeeHome(bee, value):
+        bee.ram[3] = value
+
+    # Get current Y axis of bee home from Game
+    def setYAxisBeeHome(bee, value):
+        bee.ram[4] = value
+
+    # Get current X axis of bee  from Game
+    def setXAxisBee(bee, value):
+        bee.ram[5] = value
+    # Get current X axis of bee  from Game
+    def setYAxisBee(bee, value):
+        bee.ram[6] = value
+
+    #Set the pollen count
+    def setPollenCount(bee, value):
+        bee.ram[7] = value
+    #Set X axis of pollen
+    def setPollenLocX(bee, value):
+        bee.ram[8] = value
+    #Set Y axis of pollen
+    def setPollenLocY(bee, value):
+        bee.ram[9] = value
+
+    # How much pollen is the bee holding?
+    def invCount(bee, value):
+        bee.ram[10] = value
