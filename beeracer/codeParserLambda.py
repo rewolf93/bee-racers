@@ -224,7 +224,7 @@ class CodeParser():
                         "nte" : self.nte, #Working
         }
         
-        while self.lineNum < len(self.userCode):
+        if not(self.lineNum > len(self.userCode)):
 
             #Split line up into parts and change register name to register location
             terms = self.userCode[self.lineNum].split()       
@@ -253,9 +253,10 @@ class CodeParser():
                 else:
                     comparisons[terms[0]](terms)
 
-            #Increment line number
-            self.lineNum += 1
-
+    def tick(self):
+        self.parse
+        self.lineNum += 1
+        
     #Wrong filetype when loading bee
     def fileTypeError(self):
         print("ERROR: Invalid filetype for bee. Please use a .txt file")
@@ -275,9 +276,3 @@ class CodeParser():
     def invalidMemLocAccess(self, line):
         print("ERROR: Unauthorized access to memory location, consult memory map.", self.lineNum, ":", line)
         sys.exit()
-
-    def checkMemory(self, loc):
-        return self.bee.check_ram(loc)
-
-    def setMemory(self, loc=0, value=0):
-        self.bee.set_ram(loc, value)
