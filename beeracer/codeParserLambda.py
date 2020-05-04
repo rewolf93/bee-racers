@@ -224,7 +224,7 @@ class CodeParser():
                         "nte" : self.nte, #Working
         }
         
-        while self.lineNum < len(self.userCode):
+        if not(self.lineNum > len(self.userCode)):
 
             #Split line up into parts and change register name to register location
             terms = self.userCode[self.lineNum].split()       
@@ -253,9 +253,10 @@ class CodeParser():
                 else:
                     comparisons[terms[0]](terms)
 
-            #Increment line number
-            self.lineNum += 1
-
+    def tick(self):
+        self.parse
+        self.lineNum += 1
+        
     #Wrong filetype when loading bee
     def fileTypeError(self):
         print("ERROR: Invalid filetype for bee. Please use a .txt file")

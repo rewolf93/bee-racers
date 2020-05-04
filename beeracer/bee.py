@@ -1,13 +1,13 @@
-import pygame as pg
 import pickle as pkl
 import numpy as np
 from beeracer.codeParserLambda import *
 from beeracer.physics import Moveable, Physical
 
 
+
 class Bee(Moveable):
 
-    def __init__(self, spritepath: str, assemblypath=None, binary=None):
+    def __init__(self, spritepath: str, dt=0.05, assemblypath=None, binary=None):
         if assemblypath is None and binary is None:
             raise Exception("Must provide assemblypath or binary")
 
@@ -19,9 +19,11 @@ class Bee(Moveable):
         self.__vm = None
 
         self._max_acceleration = 120
-        self._velocity = np.array([0., 0])
+        self._velocity = 0
         self._location = np.array([0., 0])
         self._phi = 0
+        self._dt = dt
+        self._acceleration = 0
 
     def start(self, startpos: (int, int)):
         start_x = float(startpos[0])
@@ -40,10 +42,28 @@ class Bee(Moveable):
         self.pos = (0, 0)
 
     def tick(self):
-        return
         self.__vm.tick()
-        if self.__vm.checkflag():
-            pass
+
+        if self.__vm.checkMemory(1) != self.theta:
+            self._phi = self.theta - self.__vm.checkMemory(1)
+
+        current_speed = self.__vm.checkMemory(2)
+        desired_speed = self.__vm.checkMemory(0)
+        speed_delta = desired_speed - current_speed
+        if speed_delta != 0:
+            if abs(speed_delta) > self._max_acceleration*self._dt + current_speed:
+                self.acceleration = self._max_acceleration * (speed_delta / abs(speed_delta))
+            else:
+                self.acceleration = speed_delta / self._dt
+        else:
+            self.acceleration = 0
+
+        self.move()
+
+        speed = np.sqrt(sum(self._velocity ** 2))
+        self.__vm.setMemory(loc=5, value=self.pos[0])
+        self.__vm.setMemory(loc=5, value=self.pos[0])
+        self.__vm.setMemory(loc=2, value=speed)
 
     def save(self, filepath: str):
         temp = self.__vm
@@ -52,20 +72,20 @@ class Bee(Moveable):
             pkl.dump(self, fle)
         self.__vm = temp
 
-    def move(self, dt=0.05):
-        self._theta += self._phi
-        arry = np.array([self._acceleration, self._velocity])
-        timevector = np.array([float(dt**2), dt])
+    def move(self):
+        self.theta += self._phi
+        arry = np.array([self.acceleration, self._velocity])
+        timevector = np.array([float(self._dt**2), self._dt])
         calc = arry*timevector
         ds = np.sum(calc)
-        dv = self.acceleration * dt
+        dv = self.acceleration * self._dt
         self._velocity += dv
         real_ds = Physical.rotateaxis(np.array([ds, 0]), self.theta)
         self._location += real_ds
-        self.update()
 
     def get_loc(self):
         return tuple(self._location)
+
 
 class ManualBee(Moveable):
 

@@ -12,6 +12,9 @@ class VM:
     
     def check_ram(self, loc):
         return self.ram[loc]
+    
+    def set_ram(self, loc, val):
+        self.ram[loc] = val
             
     #Functions for instructions
 
