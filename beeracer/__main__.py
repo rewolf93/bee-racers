@@ -1,6 +1,7 @@
 import beeracer.config as config
 import pygame
 import os
+from beeracer.game1 import Game
 from beeracer.gamemode import *
 from beeracer.gamewindow import *
 from beeracer.maps import *
@@ -31,5 +32,9 @@ def main():
 
     play_game(game_window.screen, game_window.clock, 'test', garden, bees)
 
+
 if __name__ == "__main__":
-    main()
+    # create the game object
+    g = Game()
+    g.new()
+    g.run()

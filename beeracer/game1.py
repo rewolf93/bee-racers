@@ -10,21 +10,22 @@ from beeracer.sprites import *
 from beeracer.tilemap import *
 
 #def draw_player_pollen(surf, x, y, pct):
-#	if pct < 0:
-#		pct = 0
-#	BAR_LENGTH = 100
-#	BAR_HEIGHT = 20
-#	fill = pct * BAR_LENGTH
-#	outline_rect = pg.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
-#	fill_rect = pg.Rect(x, y, fill, BAR_HEIGHT)
-#	if pct > 0.6:
-#		col = RED
-#	elif pct > 0.3:
-#		col = YELLOW
-#	else:
-#		col = GREEN
-#	pg.draw.rect(surf, col, fill_rect)
-#	pg.draw.rect(surf, WHITE, outline_rect, 2)
+#    if pct < 0:
+#        pct = 0
+#    BAR_LENGTH = 100
+#    BAR_HEIGHT = 20
+#    fill = pct * BAR_LENGTH
+#    outline_rect = pg.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
+#    fill_rect = pg.Rect(x, y, fill, BAR_HEIGHT)
+#    if pct > 0.6:
+#        col = RED
+#    elif pct > 0.3:
+#        col = YELLOW
+#    else:
+#        col = GREEN
+#    pg.draw.rect(surf, col, fill_rect)
+#    pg.draw.rect(surf, WHITE, outline_rect, 2)
+
 
 class Game:
     def __init__(self):
@@ -45,7 +46,7 @@ class Game:
         self.player_img = pg.image.load(path.join(img_folder, PLAYER_IMG)).convert_alpha()
         self.pollen_images = {}
         for pollen in POLLEN_IMAGES:
-        	self.pollen_images[pollen] = pg.image.load(path.join(img_folder, POLLEN_IMAGES[pollen])).convert_alpha()
+            self.pollen_images[pollen] = pg.image.load(path.join(img_folder, POLLEN_IMAGES[pollen])).convert_alpha()
 
     def new(self):
         # initialize all variables and do all the setup for a new game
@@ -53,19 +54,19 @@ class Game:
         self.walls = pg.sprite.Group()
         self.pollen = pg.sprite.Group()
         #for row, tiles in enumerate(self.map.data):
-        #	for col, tile in enumerate(tiles):
-        #		if tile == '1':
-        #			Wall(self, col, row)
-        #		if tile == 'P':
-        #			self.player = Player(self, col, row)
+        #    for col, tile in enumerate(tiles):
+        #        if tile == '1':
+        #            Wall(self, col, row)
+        #        if tile == 'P':
+        #            self.player = Player(self, col, row)
         for tile_object in self.map.tmxdata.objects:
-        	obj_center = vec(tile_object.x + tile_object.width / 2, tile_object.y + tile_object.height / 2)
-        	if tile_object.name == 'player':
-        		self.player = Player(self, obj_center.x, obj_center.y)
-        	if tile_object.name == 'wall':
-        		Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
-        	if tile_object.name == 'Flower':
-        		Pollen(self, obj_center, 'pollen')
+            obj_center = vec(tile_object.x + tile_object.width / 2, tile_object.y + tile_object.height / 2)
+            if tile_object.name == 'player':
+                self.player = Player(self, obj_center.x, obj_center.y)
+            if tile_object.name == 'wall':
+                Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
+            if tile_object.name == 'Flower':
+                Pollen(self, obj_center, 'pollen')
         self.camera = Camera(self.map.width, self.map.height)
         self.draw_debug = False
 
@@ -88,9 +89,9 @@ class Game:
         self.camera.update(self.player)
         hits = pg.sprite.spritecollide(self.player, self.pollen, False)
         for hit in hits:
-        	if hit.type == 'pollen' and self.player.pollen < PLAYER_MAX_POLLEN:
-        		hit.kill()
-        		self.player.add_pollen(POLLEN_AMOUNT)
+            if hit.type == 'pollen' and self.player.pollen < PLAYER_MAX_POLLEN:
+                hit.kill()
+                self.player.add_pollen(POLLEN_AMOUNT)
 
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
@@ -103,14 +104,14 @@ class Game:
         self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
         # self.draw_grid()
         for sprite in self.all_sprites:
-        	if isinstance(sprite, Player):
-        		sprite.draw_pollen()
-        	self.screen.blit(sprite.image, self.camera.apply(sprite))
-        	if self.draw_debug:
-        		pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(sprite.hit_rect),1)
+            if isinstance(sprite, Player):
+                sprite.draw_pollen()
+            self.screen.blit(sprite.image, self.camera.apply(sprite))
+            if self.draw_debug:
+                pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(sprite.hit_rect),1)
         if self.draw_debug:
-        	for wall in self.walls:
-        		pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(wall.rect),1)
+            for wall in self.walls:
+                pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(wall.rect),1)
         #pg.draw.rect(self.screen, WHITE, self.player.hit_rect, 2)
         #draw_player_pollen(self.screen, 10, 10, self.player.pollen / PLAYER_MAX_POLLEN)
         pg.display.flip()
@@ -124,7 +125,7 @@ class Game:
                 if event.key == pg.K_ESCAPE:
                     self.quit()
                 if event.key == pg.K_h:
-                	self.draw_debug = not self.draw_debug
+                    self.draw_debug = not self.draw_debug
 
 
     def show_start_screen(self):
@@ -132,11 +133,3 @@ class Game:
 
     def show_go_screen(self):
         pass
-
-# create the game object
-g = Game()
-g.show_start_screen()
-while True:
-    g.new()
-    g.run()
-    g.show_go_screen()
