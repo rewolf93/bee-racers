@@ -14,6 +14,7 @@ class CodeParser():
         #Set line number to zero and initialize stack
         self.lineNum = 0
         self.functionLine = []
+        self.cycles = 0
 
 
         #Check if path is a text file
@@ -25,11 +26,11 @@ class CodeParser():
         self.userCode = beeCode.readlines()
         beeCode.close()
 
-        #Remove whitespace and comments and, set ports to memory locations 
+        #Remove whitespace and comments and, set ports to memory locations
         line = 0
         while line < len(self.userCode):
             terms = self.userCode[line].split()
-            if len(terms) == 0 or "#" in terms[0]:
+            if len(terms) == 0:
                 self.userCode.pop(line)
             else:
                 line += 1
@@ -62,7 +63,7 @@ class CodeParser():
     #Change port to memory location
     def portToLoc(self, terms):
         for i in range(1, len(terms)):
-            if terms[i] in MemoryMap.ports:
+            if terms[i] in MemoryMap.ports.keys():
                 terms[i] = MemoryMap.ports[terms[i]]
                 
     #Change port to an int
@@ -164,11 +165,8 @@ class CodeParser():
         print("ERROR: " + temp)
 
     #Wait cycles
-    def wait(self, cycles):
-        if not isinstance(cycles, int):
-            self.invalidInputError(self.userCode[self.lineNum])
-            
-        self.bee.nop(int(cycles))
+    def wait(self):
+        self.cycles = self.bee.nop(self.cycles)
 
     #Push function to stack for return
     def pushFunction(self):
@@ -202,9 +200,10 @@ class CodeParser():
                 "not" : self.bee.nott  #Working
         }
 
-        inputFunc = {"p_zoom"   : self.bee.p_zoom,
-                     "p_steer"  : self.bee.p_steer,
-                     "p_scanarc": self.bee.p_scanarc
+        inputFunc = {"p_zoom": self.bee.p_zoom,
+                     "p_steer": self.bee.p_steer,
+                     "p_scanarc": self.bee.p_scanarc,
+                     "ipo": self.bee.ipo
         }
 
         outputFunc = {"p_compass"   : self.bee.p_compass,
@@ -224,7 +223,7 @@ class CodeParser():
                         "nte" : self.nte, #Working
         }
         
-        if not(self.lineNum > len(self.userCode)):
+        if not(self.lineNum >= len(self.userCode)):
 
             #Split line up into parts and change register name to register location
             terms = self.userCode[self.lineNum].split()       
@@ -237,24 +236,26 @@ class CodeParser():
                 self.err(terms)
 
             elif terms[0] == "nop":
-                self.wait(terms[1])
+                self.cycles = int(terms[1])
+                self.wait()
                 
-            elif len(terms) == 3:
+            else:
                 self.portToLoc(terms)
-                math[terms[0]](int(terms[1]), int(terms[2]))
-
-            elif len(terms) == 5 or len(terms) == 2:
-                
-                #Set memory location to what variable needs to be changed
-                self.portToNum(terms)
-                if math.get(terms[0]):    
-                    math[terms[0]](terms[1], terms[2])
-
-                else:
+                if terms[0] in inputFunc.keys():
+                    inputFunc[terms[0]](terms[1], terms[2])
+                elif terms[0] in math.keys():
+                    math[terms[0]](int(terms[1]), int(terms[2]))
+                elif terms[0] in outputFunc.keys():
+                    outputFunc[terms[0]](terms[1:])
+                elif terms[0] in comparisons.keys():
                     comparisons[terms[0]](terms)
 
     def tick(self):
-        self.parse
+        if self.cycles:
+            self.wait()
+            return
+
+        self.parse()
         self.lineNum += 1
         
     #Wrong filetype when loading bee
@@ -276,3 +277,13 @@ class CodeParser():
     def invalidMemLocAccess(self, line):
         print("ERROR: Unauthorized access to memory location, consult memory map.", self.lineNum, ":", line)
         sys.exit()
+
+    def checkMemory(self, loc):
+        if isinstance(loc, str):
+            loc = MemoryMap.ports[loc]
+        return self.bee.check_ram(loc)
+
+    def setMemory(self, loc=0, value=0):
+        if isinstance(loc, str):
+            loc = MemoryMap.ports[loc]
+        return self.bee.set_ram(loc, value)

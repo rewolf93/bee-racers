@@ -8,6 +8,8 @@ from os import path
 from beeracer.settings import *
 from beeracer.sprites import *
 from beeracer.tilemap import *
+from beeracer.bee import ManualBee, Bee
+import easygui
 
 #def draw_player_pollen(surf, x, y, pct):
 #    if pct < 0:
@@ -37,19 +39,21 @@ class Game:
         self.load_data()
 
     def load_data(self):
-        game_folder = path.dirname(__file__)
-        img_folder = path.join(game_folder, 'assets/sprites')
-        map_folder = path.join(game_folder, 'assets/maps')
+        self.game_folder = path.dirname(__file__)
+        img_folder = path.join(self.game_folder, 'assets/sprites')
+        map_folder = path.join(self.game_folder, 'assets/maps')
         self.map = TiledMap(path.join(map_folder, '1st_Map.tmx'))
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
-        self.player_img = pg.image.load(path.join(img_folder, PLAYER_IMG)).convert_alpha()
         self.pollen_images = {}
         for pollen in POLLEN_IMAGES:
             self.pollen_images[pollen] = pg.image.load(path.join(img_folder, POLLEN_IMAGES[pollen])).convert_alpha()
 
     def new(self):
         # initialize all variables and do all the setup for a new game
+        assembly = easygui.fileopenbox()
+        if assembly is None:
+            assembly = path.join(self.game_folder, 'assets/assembly', 'basicbee.txt')
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.pollen = pg.sprite.Group()
@@ -62,7 +66,8 @@ class Game:
         for tile_object in self.map.tmxdata.objects:
             obj_center = vec(tile_object.x + tile_object.width / 2, tile_object.y + tile_object.height / 2)
             if tile_object.name == 'player':
-                self.player = Player(self, obj_center.x, obj_center.y)
+                self.player = Bee(self, path.join(self.game_folder, 'assets/sprites', PLAYER_IMG),
+                                  assemblypath=assembly, pos=(obj_center.x, obj_center.y))
             if tile_object.name == 'wall':
                 Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
             if tile_object.name == 'Flower':
@@ -75,9 +80,13 @@ class Game:
         self.playing = True
         while self.playing:
             self.dt = self.clock.tick(FPS) / 1000.0
+            #print('dt')
             self.events()
+            #print('events')
             self.update()
+            #print('update')
             self.draw()
+            #print('draw')
 
     def quit(self):
         pg.quit()
@@ -89,7 +98,7 @@ class Game:
         self.camera.update(self.player)
         hits = pg.sprite.spritecollide(self.player, self.pollen, False)
         for hit in hits:
-            if hit.type == 'pollen' and self.player.pollen < PLAYER_MAX_POLLEN:
+            if hit.type == 'pollen':
                 hit.kill()
                 self.player.add_pollen(POLLEN_AMOUNT)
 
@@ -104,7 +113,8 @@ class Game:
         self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
         # self.draw_grid()
         for sprite in self.all_sprites:
-            if isinstance(sprite, Player):
+            #print(sprite)
+            if isinstance(sprite, Bee):
                 sprite.draw_pollen()
             self.screen.blit(sprite.image, self.camera.apply(sprite))
             if self.draw_debug:

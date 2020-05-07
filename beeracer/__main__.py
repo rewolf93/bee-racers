@@ -2,7 +2,7 @@ import beeracer.config as config
 import pygame
 import os
 from beeracer.game1 import Game
-from beeracer.gamemode import *
+#from beeracer.gamemode import *
 from beeracer.gamewindow import *
 from beeracer.maps import *
 #from startmenu import *

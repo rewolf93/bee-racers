@@ -1,6 +1,8 @@
 
 class MemoryMap:
-    ChangedFlag = 0
-    Speed = 1
-    Angle = 2
-    Score = 3
+    ports = {
+        'dspd': 0,
+        'dhd': 1,
+        'cspd': 2,
+        'pollencount': 7,
+        'pollenhead': 11}

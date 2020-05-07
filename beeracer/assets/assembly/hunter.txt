@@ -1,0 +1,6 @@
+
+mov dspd 120
+
+#start
+ipo pollenhead dhd
+jmp #start

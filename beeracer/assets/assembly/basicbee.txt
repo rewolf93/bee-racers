@@ -1,1 +1,7 @@
-ADD 500 1
+mov dspd 40
+
+#start
+add dhd 90
+add dspd 10
+nop 25
+jmp #start

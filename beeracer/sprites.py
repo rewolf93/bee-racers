@@ -63,23 +63,6 @@ class Player(pg.sprite.Sprite):
         self.collide_with_walls('y')
         self.rect.center = self.hit_rect.center
 
-    def draw_pollen(self):
-        if self.pollen > 60:
-            col = RED
-        elif self.pollen > 30:
-            col = YELLOW
-        else:
-            col = GREEN
-        width = int(self.rect.width * self.pollen / PLAYER_MAX_POLLEN)
-        self.pollen_bar = pg.Rect(0, 0, width, 10)
-        if self.pollen > 0:
-            pg.draw.rect(self.image, col, self.pollen_bar)
-
-    def add_pollen(self, amount):
-        self.pollen += amount
-        if self.pollen > PLAYER_MAX_POLLEN:
-            self.pollen = PLAYER_MAX_POLLEN
-
 
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):
